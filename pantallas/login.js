@@ -7,20 +7,16 @@ export default function Login({ navigation }) {
         navigation.navigate('navigation');
     };
 
-    // const irRegistrar = async () => {
-    //     navigation.navigate('Registro');
-    // };
-
-    // const Recuperar = async () => {
-    //     navigation.navigate('RecuperarContrasenia');
-    // };    
+    const Recuperar = async () => {
+        navigation.navigate('CodeInput');
+    };    
 
     return (
         <View style={styles.container}>
             <Text style={styles.welcomeText}>Bienvenido</Text>
             <TextInput style={styles.input} placeholder="Correo electronico" />
             <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={Recuperar}>
                 <Text style={styles.forgotPasswordText}>Recuperar contraseña</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handlerLogin} style={styles.loginButton}>

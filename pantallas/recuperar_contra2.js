@@ -1,6 +1,6 @@
 // screens/CambiarContra.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
 export default function CambiarContra({ navigation }) {
   const [newPassword, setNewPassword] = useState('');
@@ -35,7 +35,9 @@ export default function CambiarContra({ navigation }) {
         placeholder="********"
         secureTextEntry
       />
-      <Button title="Confirmar contraseña" onPress={handleConfirmPassword} />
+      <TouchableOpacity style={styles.button} onPress={handleConfirmPassword} >
+        <Text style={styles.buttonText}>Confirmar contraseña</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -45,6 +47,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
+    justifyContent: 'center',
   },
   label: {
     fontSize: 16,
@@ -56,5 +59,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+  },
+  button: {
+    backgroundColor: '#9368EE',
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
