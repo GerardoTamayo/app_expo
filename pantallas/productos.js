@@ -1,8 +1,14 @@
+// Importamos React y useState para poder utilizar estados en el componente.
 import React, { useState } from 'react';
+
+// Importamos los componentes necesarios de react-native y react-native-paper.
 import { View, FlatList, StyleSheet } from 'react-native';
 import { Searchbar, Card, Title, Paragraph, Modal, Portal, Text, Button, TextInput, Provider } from 'react-native-paper';
+
+// Importamos los iconos de MaterialCommunityIcons de @expo/vector-icons.
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+// Definimos una lista de productos de prueba.
 const productosPrueba = [
     { id: '1', name: 'Cereal del zucarita', expiration: '17/11/2025', stock: 25, brand: 'zucarita' },
     { id: '2', name: 'Cereal del zucarita', expiration: '17/11/2025', stock: 25, brand: 'zucarita' },
@@ -11,7 +17,9 @@ const productosPrueba = [
     { id: '5', name: 'Cereal del zucarita', expiration: '17/11/2025', stock: 25, brand: 'zucarita' },
 ];
 
+// Definimos el componente principal de Productos.
 export default function Productos() {
+    // Definimos los estados necesarios.
     const [products, setProducts] = useState(productosPrueba);
     const [searchQuery, setSearchQuery] = useState('');
     const [visible, setVisible] = useState(false);
@@ -25,12 +33,15 @@ export default function Productos() {
         presentation: '',
     });
 
+    // Función que maneja el cambio en el campo de búsqueda.
     const onChangeSearch = query => setSearchQuery(query);
 
+    // Filtramos los productos según la consulta de búsqueda.
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Función que renderiza cada ítem en la lista.
     const renderItem = ({ item }) => (
         <Card style={styles.card}>
             <Card.Content>
@@ -42,44 +53,39 @@ export default function Productos() {
         </Card>
     );
 
+    // Función para mostrar el modal.
     const showModal = () => setVisible(true);
+
+    // Función para ocultar el modal.
     const hideModal = () => setVisible(false);
 
+    // Función que maneja el cambio de texto en el campo del nuevo producto.
     const handleInputChange = (name, value) => {
         setNewProduct({ ...newProduct, [name]: value });
     };
 
-    // const addProduct = () => {
-    //     setProducts([...products, { ...newProduct, id: (products.length + 1).toString() }]);
-    //     setNewProduct({
-    //         name: '',
-    //         expiration: '',
-    //         description: '',
-    //         stock: '',
-    //         category: '',
-    //         brand: '',
-    //         presentation: '',
-    //     });
-    //     hideModal();
-    // };
-
+    // Retornamos el componente.
     return (
         <Provider>
             <View style={styles.container}>
+                {/* Barra de búsqueda */}
                 <Searchbar
                     placeholder="Buscar producto"
                     onChangeText={onChangeSearch}
                     value={searchQuery}
                     style={styles.searchbar}
                 />
+                {/* Botón para añadir nuevo producto */}
                 <Button onPress={showModal} style={styles.addButton}>
-                <MaterialCommunityIcons name="plus-circle-outline" size={22} color="#9368EE" />
+                    <MaterialCommunityIcons name="plus-circle-outline" size={22} color="#9368EE" />
                 </Button>
+                {/* Lista de productos filtrados */}
                 <FlatList
                     data={filteredProducts}
                     renderItem={renderItem}
                     keyExtractor={item => item.id}
                 />
+                {/* Modal para añadir nuevo producto */}
                 <Portal>
                     <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.modalContainer}>
                         <Button onPress={hideModal} style={styles.closeButton}>
@@ -98,7 +104,7 @@ export default function Productos() {
                             style={styles.input}
                         />
                         <TextInput
-                            label="Descripcion"
+                            label="Descripción"
                             value={newProduct.description}
                             onChangeText={text => handleInputChange('description', text)}
                             style={styles.input}
@@ -110,7 +116,7 @@ export default function Productos() {
                             style={styles.input}
                         />
                         <TextInput
-                            label="Categoria"
+                            label="Categoría"
                             value={newProduct.category}
                             onChangeText={text => handleInputChange('category', text)}
                             style={styles.input}
@@ -122,7 +128,7 @@ export default function Productos() {
                             style={styles.input}
                         />
                         <TextInput
-                            label="Presentacion"
+                            label="Presentación"
                             value={newProduct.presentation}
                             onChangeText={text => handleInputChange('presentation', text)}
                             style={styles.input}
@@ -137,6 +143,7 @@ export default function Productos() {
     );
 }
 
+// Definimos los estilos para el componente.
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -171,7 +178,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         width: 5,
         alignSelf: "flex-end",
-        marginBottom: 10
+        marginBottom: 10,
     },
 });
-
