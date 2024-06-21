@@ -10,11 +10,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Definimos una lista de categorías de prueba.
 const categoriaPrueba = [
-    { id: '1', name: 'Categoria', categories: 'Zucarita' },
-    { id: '2', name: 'Categoria', categories: 'Club max gama' },
-    { id: '3', name: 'Categoria', categories: 'Del cañal' },
-    { id: '4', name: 'Categoria', categories: 'Knorr' },
-    { id: '5', name: 'Categoria', categories: 'Orisol' },
+    { id: '1', name: 'Categoria', categories: 'Cereal' },
+    { id: '2', name: 'Categoria', categories: 'Galletas' },
+    { id: '3', name: 'Categoria', categories: 'Azucar' },
+    { id: '4', name: 'Categoria', categories: 'Sopas' },
+    { id: '5', name: 'Categoria', categories: 'Aceites' },
 ];
 
 // Definimos el componente principal de Categorias.
@@ -40,7 +40,7 @@ export default function Categorias() {
         <Card style={styles.card}>
             <Card.Content>
                 <Title>{item.name}</Title>
-                <Paragraph>Marca: {item.categories}</Paragraph>
+                <Paragraph>Categoria: {item.categories}</Paragraph>
             </Card.Content>
         </Card>
     );
