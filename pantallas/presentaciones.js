@@ -4,11 +4,11 @@ import { Searchbar, Card, Title, Paragraph, Modal, Portal, Text, Button, TextInp
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const presentacionesPrueba = [
-    { id: '1', presentation: 'Caja' },
-    { id: '2', presentation: 'Caja' },
-    { id: '3', presentation: 'Arroba' },
-    { id: '4', presentation: 'Caja' },
-    { id: '5', presentation: 'Fardo'},
+    { id: '1', name:'Presentación', presentation: 'Caja' },
+    { id: '2', name:'Presentación', presentation: 'Caja' },
+    { id: '3', name:'Presentación', presentation: 'Arroba' },
+    { id: '4', name:'Presentación', presentation: 'Caja' },
+    { id: '5', name:'Presentación', presentation: 'Fardo'},
 ];
 
 export default function Presentaciones() {
@@ -28,7 +28,7 @@ export default function Presentaciones() {
         const renderItem = ({ item }) => (
             <Card style={styles.card}>
                 <Card.Content>
-                    <Title>{item.presentation}</Title>
+                    <Title>{item.name}</Title>
                     <Paragraph>Presentacion: {item.presentation}</Paragraph>
                 </Card.Content>
             </Card>
@@ -130,4 +130,3 @@ export default function Presentaciones() {
             marginBottom: 10
         },
     });
-    
