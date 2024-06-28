@@ -8,10 +8,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Importamos las pantallas que utilizaremos en nuestra aplicación.
-import Sesion from './pantallas/login';
-import Navigation from './navegation/navigation';
-import Codigo from './pantallas/recuperar_contra1';
-import CambiarContra from './pantallas/recuperar_contra2';
+import Sesion from './src/pantallas/login';
+import Navigation from './src/navegation/navigation';
+import Codigo from './src/pantallas/recuperar_contra1';
+import CambiarContra from './src/pantallas/recuperar_contra2';
 
 // Función principal de la aplicación que será exportada como el componente principal.
 export default function App() {
