@@ -19,6 +19,7 @@ import Categoria from '../pantallas/categorias';
 import Presentaciones from '../pantallas/presentaciones';
 import Marca from '../pantallas/marcas';
 import Inicio from '../pantallas/index';
+import Perfil from '../pantallas/perfil';
 import { color } from "react-native-elements/dist/helpers";
 
 // Creamos una instancia del Bottom Tab Navigator.
@@ -96,6 +97,20 @@ function Mytabs() {
                 component={Presentaciones}
                 options={{
                     tabBarLabel: 'Presentaciones',
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons name="database-arrow-up-outline" size={24} color="black" />
+                    ),
+                    headerShown: true,
+                    headerStyle: {
+                        backgroundColor: '#9368EE'
+                    },
+                }}
+            />
+            <Tab.Screen
+                name="Perfil"
+                component={Perfil}
+                options={{
+                    tabBarLabel: 'Perfil',
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="database-arrow-up-outline" size={24} color="black" />
                     ),
