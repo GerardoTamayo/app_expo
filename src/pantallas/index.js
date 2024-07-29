@@ -1,19 +1,42 @@
 // Importamos React para poder utilizar JSX y React components.
 import React from 'react';
+import * as Constantes from '../utilidades/constante';
 
 // Importamos los componentes necesarios de react-native.
-import { SafeAreaView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { SafeAreaView, Text, View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 
 // Importamos los iconos de MaterialCommunityIcons de @expo/vector-icons.
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Definimos el componente de Inicio como una función.
 export default function Inicio({ navigation }) {
+    // Obtiene la IP del archivo de constantes.
+    const ip = Constantes.IP;
 
-    // Función que maneja el evento de cierre de sesión.
-    const Cerrar = async () => {
-        // Navegamos a la pantalla de sesión.
-        navigation.navigate('Sesion');
+    const handleLogout = async () => {
+        // Función para manejar el cierre de sesión.
+        try {
+            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/usuario.php?action=logOut`, {
+                method: 'GET'
+            });
+            // Realiza una solicitud GET para cerrar la sesión.
+
+            const data = await response.json();
+            // Convierte la respuesta a formato JSON.
+
+            if (data.status) {
+                navigation.navigate('Sesion');
+                // Navega a la pantalla de inicio si la respuesta es exitosa.
+            } else {
+                console.log(data);
+                // Muestra el error en la consola.
+                Alert.alert('Error', data.error);
+                // Muestra una alerta con el error.
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Ocurrió un error al cerrar la sesión');
+            // Muestra una alerta si ocurre una excepción.
+        }
     };
 
     // Componente que define las cajas con los iconos y textos.
@@ -54,7 +77,7 @@ export default function Inicio({ navigation }) {
                 </View>
 
                 {/* Botón para cerrar sesión */}
-                <TouchableOpacity onPress={Cerrar} style={styles.loginButton}>
+                <TouchableOpacity onPress={handleLogout} style={styles.loginButton}>
                     <MaterialCommunityIcons name="logout" size={25} color="white" />
                     <Text style={styles.loginButtonText}>Cerrar sesión</Text>
                 </TouchableOpacity>
