@@ -5,7 +5,7 @@ import * as Constantes from '../utilidades/constante';
 // Importamos los componentes necesarios de react-native y react-native-paper.
 import { View, FlatList, StyleSheet } from 'react-native';
 import { Searchbar, Card, Title, Paragraph, Modal, Portal, Text, Button, TextInput, Provider } from 'react-native-paper';
-
+import RNPickerSelect from 'react-native-picker-select';
 // Importamos los iconos de MaterialCommunityIcons de @expo/vector-icons.
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -15,17 +15,16 @@ export default function Productos() {
     const ip = Constantes.IP;
     // Definimos los estados necesarios.
     const [searchQuery, setSearchQuery] = useState('');
+    const [dataCategorias, setDataCategorias] = useState([])
+    const [dataMarcas, setDataMarcas] = useState([])
+    const [dataPresentaciones, setDataPresentaciones] = useState([])
     const [visible, setVisible] = useState(false);
-    const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-    const [idToDelete, setIdToDelete] = useState(null);
-    const [idToUpdate, setIdToUpdate] = useState(null);
 
     // Función para mostrar el modal.
     const showModal = () => setVisible(true);
     // Función para ocultar el modal.
     const hideModal = () => {
         setVisible(false);
-        setIdToUpdate(null); // Restablecer idToUpdate a null cuando se cierra el modal
         limpiarCampos();
     }
 
@@ -61,22 +60,90 @@ export default function Productos() {
             });
             const data = await response.json();
             setResponse(data.dataset)
-            console.log(data)
         } catch (error) {
             console.error(error);
             Alert.alert('Error');
         }
     };
 
+    const getCategorias = async () => {
+        try {
+
+            //utilizar la direccion IP del servidor y no localhost
+            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/categoria.php?action=readAll`, {
+                method: 'GET',
+            });
+
+            const data = await response.json();
+            if (data.status) {
+                setDataCategorias(data.dataset)
+            } else {
+                console.log(data);
+                // Alert the user about the error
+                Alert.alert('Error categorias', data.error);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Ocurrió un error al listar las categorias');
+        }
+    }
+
+    const getMarcas = async () => {
+        try {
+
+            //utilizar la direccion IP del servidor y no localhost
+            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/marca.php?action=readAll`, {
+                method: 'GET',
+            });
+
+            const data = await response.json();
+            if (data.status) {
+                setDataMarcas(data.dataset)
+            } else {
+                console.log(data);
+                // Alert the user about the error
+                Alert.alert('Error marcas', data.error);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Ocurrió un error al listar las marcas');
+        }
+    }
+
+    const getPresentacion = async () => {
+        try {
+
+            //utilizar la direccion IP del servidor y no localhost
+            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readAll`, {
+                method: 'GET',
+            });
+
+            const data = await response.json();
+            if (data.status) {
+                setDataPresentaciones(data.dataset)
+            } else {
+                console.log(data);
+                // Alert the user about the error
+                Alert.alert('Error presentaciones', data.error);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Ocurrió un error al listar las presentaciones');
+        }
+    }
+
     // Ejecuta fillList al montar el componente
     useEffect(() => {
         fillList();
+        getCategorias();
+        getMarcas();
+        getPresentacion();
     }, []);
 
     // Ejecuta fillList cuando la pantalla recibe foco
     useFocusEffect(
         useCallback(() => {
             fillList();
+            getCategorias();
+            getMarcas();
+            getPresentacion();
         }, [])
     );
 
@@ -88,6 +155,7 @@ export default function Productos() {
                 <Paragraph>Vencimiento: {item.fecha_vencimiento}</Paragraph>
                 <Paragraph>Existencias: {item.existencias_producto}</Paragraph>
                 <Paragraph>Marca: {item.nombre_marca}</Paragraph>
+                <Paragraph>Descripcion: {item.descripcion}</Paragraph>
             </Card.Content>
         </Card>
     );
@@ -142,24 +210,42 @@ export default function Productos() {
                             onChangeText={text => handleInputChange('stock', text)}
                             style={styles.input}
                         />
-                        <TextInput
-                            label="Categoría"
-                            // value={newProduct.category}
-                            onChangeText={text => handleInputChange('category', text)}
-                            style={styles.input}
-                        />
-                        <TextInput
-                            label="Marca"
-                            // value={newProduct.brand}
-                            onChangeText={text => handleInputChange('brand', text)}
-                            style={styles.input}
-                        />
-                        <TextInput
-                            label="Presentación"
-                            // value={newProduct.presentation}
-                            onChangeText={text => handleInputChange('presentation', text)}
-                            style={styles.input}
-                        />
+                        <View>
+                            <View style={styles.pickerContainer}>
+                                <RNPickerSelect
+                                    onValueChange={(value) => getMarcas(value)}
+                                    placeholder={{ label: 'Selecciona una marca...', value: null }}
+                                    items={dataMarcas.map(marca => ({
+                                        label: marca.nombre_marca,
+                                        value: marca.id_marca,
+                                    }))}
+                                />
+                            </View>
+                        </View>
+                        <View>
+                            <View style={styles.pickerContainer}>
+                                <RNPickerSelect
+                                    onValueChange={(value) => getPresentacion(value)}
+                                    placeholder={{ label: 'Selecciona una presentación...', value: null }}
+                                    items={dataPresentaciones.map(presentacion => ({
+                                        label: presentacion.tipo_presentacion,
+                                        value: presentacion.id_tipo_presentacion,
+                                    }))}
+                                />
+                            </View>
+                        </View>
+                        <View>
+                            <View style={styles.pickerContainer}>
+                                <RNPickerSelect
+                                    onValueChange={(value) => getCategorias(value)}
+                                    placeholder={{ label: 'Selecciona una categoría...', value: null }}
+                                    items={dataCategorias.map(categoria => ({
+                                        label: categoria.nombre_categoria,
+                                        value: categoria.id_categoria,
+                                    }))}
+                                />
+                            </View>
+                        </View>
                         <Button mode="contained" style={styles.saveButton}>
                             Guardar
                         </Button>
@@ -193,7 +279,10 @@ const styles = StyleSheet.create({
         margin: 20,
     },
     input: {
-        marginBottom: 10,
+        marginBottom: 7,
+        borderWidth: 1,
+        borderRadius: 5,
+        backgroundColor: '#fff',
     },
     saveButton: {
         marginTop: 5,
@@ -206,5 +295,11 @@ const styles = StyleSheet.create({
         width: 5,
         alignSelf: "flex-end",
         marginBottom: 10,
+    },
+    pickerContainer: {
+        borderWidth: 1,
+        borderColor: '#fff',
+        borderRadius: 5,
+        backgroundColor: '#fff',
     },
 });
