@@ -226,8 +226,10 @@ export default function Productos() {
                             label="Existencias"
                             // value={newProduct.stock}
                             onChangeText={text => setExistencias(text)}
+                            keyboardType="numeric"
                             style={styles.input}
                         />
+
                         <View style={styles.contenedorFecha}>
                             <TouchableOpacity onPress={showDatepicker}><Text style={styles.fechaSeleccionar}>Seleccionar fecha vencimiento:</Text></TouchableOpacity>
                             <Text style={styles.fecha}>Seleccion: {Fecha}</Text>
@@ -336,6 +338,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     contenedorFecha: {
+
         marginBottom: 10,
         borderWidth: 1,
         borderRadius: 5,
