@@ -3,21 +3,24 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Constantes from '../utilidades/constante';
 // Importamos los componentes necesarios de react-native y react-native-paper.
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Searchbar, Card, Title, Paragraph, Modal, Portal, Text, Button, TextInput, Provider } from 'react-native-paper';
 import RNPickerSelect from 'react-native-picker-select';
+import DateTimePicker from '@react-native-community/datetimepicker';
 // Importamos los iconos de MaterialCommunityIcons de @expo/vector-icons.
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 
 // Definimos el componente principal de Productos.
 export default function Productos() {
     const ip = Constantes.IP;
     // Definimos los estados necesarios.
     const [searchQuery, setSearchQuery] = useState('');
-    const [dataCategorias, setDataCategorias] = useState([])
-    const [dataMarcas, setDataMarcas] = useState([])
-    const [dataPresentaciones, setDataPresentaciones] = useState([])
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+    const [dataCategorias, setDataCategorias] = useState([]);
+    const [dataMarcas, setDataMarcas] = useState([]);
+    const [dataPresentaciones, setDataPresentaciones] = useState([]);
     const [visible, setVisible] = useState(false);
 
     // Función para mostrar el modal.
@@ -26,7 +29,7 @@ export default function Productos() {
     const hideModal = () => {
         setVisible(false);
         limpiarCampos();
-    }
+    };
 
     // Estados para manejar los datos, carga y errores
     const [response, setResponse] = useState([]);
@@ -59,7 +62,7 @@ export default function Productos() {
                 method: 'GET'
             });
             const data = await response.json();
-            setResponse(data.dataset)
+            setResponse(data.dataset);
         } catch (error) {
             console.error(error);
             Alert.alert('Error');
@@ -68,7 +71,6 @@ export default function Productos() {
 
     const getCategorias = async () => {
         try {
-
             //utilizar la direccion IP del servidor y no localhost
             const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/categoria.php?action=readAll`, {
                 method: 'GET',
@@ -76,7 +78,7 @@ export default function Productos() {
 
             const data = await response.json();
             if (data.status) {
-                setDataCategorias(data.dataset)
+                setDataCategorias(data.dataset);
             } else {
                 console.log(data);
                 // Alert the user about the error
@@ -85,11 +87,10 @@ export default function Productos() {
         } catch (error) {
             Alert.alert('Error', 'Ocurrió un error al listar las categorias');
         }
-    }
+    };
 
     const getMarcas = async () => {
         try {
-
             //utilizar la direccion IP del servidor y no localhost
             const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/marca.php?action=readAll`, {
                 method: 'GET',
@@ -97,7 +98,7 @@ export default function Productos() {
 
             const data = await response.json();
             if (data.status) {
-                setDataMarcas(data.dataset)
+                setDataMarcas(data.dataset);
             } else {
                 console.log(data);
                 // Alert the user about the error
@@ -106,11 +107,10 @@ export default function Productos() {
         } catch (error) {
             Alert.alert('Error', 'Ocurrió un error al listar las marcas');
         }
-    }
+    };
 
     const getPresentacion = async () => {
         try {
-
             //utilizar la direccion IP del servidor y no localhost
             const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readAll`, {
                 method: 'GET',
@@ -118,7 +118,7 @@ export default function Productos() {
 
             const data = await response.json();
             if (data.status) {
-                setDataPresentaciones(data.dataset)
+                setDataPresentaciones(data.dataset);
             } else {
                 console.log(data);
                 // Alert the user about the error
@@ -127,7 +127,31 @@ export default function Productos() {
         } catch (error) {
             Alert.alert('Error', 'Ocurrió un error al listar las presentaciones');
         }
-    }
+    };
+
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShow(false);
+        setDate(currentDate);
+        /*
+        Codigo para convertir la fecha al formato año-mes-dia */
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+
+        const fecha = `${year}-${month}-${day}`;
+        setFecha(fecha);
+    };
+
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    };
+
+    const showDatepicker = () => {
+        showMode('date');
+    };
 
     // Ejecuta fillList al montar el componente
     useEffect(() => {
@@ -189,32 +213,40 @@ export default function Productos() {
                         <TextInput
                             label="Nombre"
                             // value={newProduct.name}
-                            onChangeText={text => handleInputChange('name', text)}
-                            style={styles.input}
-                        />
-                        <TextInput
-                            label="Fecha vencimiento"
-                            // value={newProduct.expiration}
-                            onChangeText={text => handleInputChange('expiration', text)}
+                            onChangeText={text => setNombre(text)}
                             style={styles.input}
                         />
                         <TextInput
                             label="Descripción"
                             // value={newProduct.description}
-                            onChangeText={text => handleInputChange('description', text)}
+                            onChangeText={text => setDescripcion(text)}
                             style={styles.input}
                         />
                         <TextInput
                             label="Existencias"
                             // value={newProduct.stock}
-                            onChangeText={text => handleInputChange('stock', text)}
+                            onChangeText={text => setExistencias(text)}
                             style={styles.input}
                         />
+                        <View style={styles.contenedorFecha}>
+                            <TouchableOpacity onPress={showDatepicker}><Text style={styles.fechaSeleccionar}>Seleccionar fecha vencimiento:</Text></TouchableOpacity>
+                            <Text style={styles.fecha}>Seleccion: {Fecha}</Text>
+                            {show && (
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={date}
+                                    mode={mode}
+                                    is24Hour={true}
+                                    display="default"
+                                    onChange={onChange}
+                                />
+                            )}
+                        </View>
                         <View>
                             <View style={styles.pickerContainer}>
                                 <RNPickerSelect
-                                    onValueChange={(value) => getMarcas(value)}
-                                    placeholder={{ label: 'Selecciona una marca...', value: null }}
+                                    onValueChange={(value) => setMarca(value)}
+                                    placeholder={{ label: 'Seleccione una marca', value: null }}
                                     items={dataMarcas.map(marca => ({
                                         label: marca.nombre_marca,
                                         value: marca.id_marca,
@@ -225,8 +257,8 @@ export default function Productos() {
                         <View>
                             <View style={styles.pickerContainer}>
                                 <RNPickerSelect
-                                    onValueChange={(value) => getPresentacion(value)}
-                                    placeholder={{ label: 'Selecciona una presentación...', value: null }}
+                                    onValueChange={(value) => setPresentacion(value)}
+                                    placeholder={{ label: 'Seleccione una presentación', value: null }}
                                     items={dataPresentaciones.map(presentacion => ({
                                         label: presentacion.tipo_presentacion,
                                         value: presentacion.id_tipo_presentacion,
@@ -237,8 +269,8 @@ export default function Productos() {
                         <View>
                             <View style={styles.pickerContainer}>
                                 <RNPickerSelect
-                                    onValueChange={(value) => getCategorias(value)}
-                                    placeholder={{ label: 'Selecciona una categoría...', value: null }}
+                                    onValueChange={(value) => setCategoria(value)}
+                                    placeholder={{ label: 'Seleccione una categoría', value: null }}
                                     items={dataCategorias.map(categoria => ({
                                         label: categoria.nombre_categoria,
                                         value: categoria.id_categoria,
@@ -297,9 +329,23 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     pickerContainer: {
+        marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#fff',
+        borderColor: '#000',
         borderRadius: 5,
         backgroundColor: '#fff',
+    },
+    contenedorFecha: {
+        marginBottom: 10,
+        borderWidth: 1,
+        borderRadius: 5,
+        backgroundColor: '#fff',
+    },
+    fecha: {
+        fontSize: 16,
+    },
+    fechaSeleccionar: {
+        paddingBottom: 15,
+        color: '#000',
     },
 });
