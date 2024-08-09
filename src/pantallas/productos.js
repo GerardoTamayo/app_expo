@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as Constantes from '../utilidades/constante';
 // Importamos los componentes necesarios de react-native y react-native-paper.
 import { View, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Searchbar, Card, Title, Paragraph, Modal, Portal, Text, Button, TextInput, Provider } from 'react-native-paper';
+import { Searchbar, Card, Title, Paragraph, Modal, Portal, Text, Button, TextInput, Provider, Dialog } from 'react-native-paper';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 // Importamos los iconos de MaterialCommunityIcons de @expo/vector-icons.
@@ -16,6 +16,7 @@ export default function Productos() {
     // Definimos los estados necesarios.
     const [searchQuery, setSearchQuery] = useState('');
     const [date, setDate] = useState(new Date());
+    const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [dataCategorias, setDataCategorias] = useState([]);
@@ -23,6 +24,7 @@ export default function Productos() {
     const [dataPresentaciones, setDataPresentaciones] = useState([]);
     const [visible, setVisible] = useState(false);
     const [idToUpdate, setIdToUpdate] = useState(null);
+    const [idToDelete, setIdToDelete] = useState(null);
 
     // Función para mostrar el modal.
     const showModal = () => setVisible(true);
@@ -54,6 +56,13 @@ export default function Productos() {
         setPresentacion('');
     };
 
+    const showDeleteDialog = (id) => {
+        setIdToDelete(id);
+        setDeleteDialogVisible(true);
+    };
+
+    const hideDeleteDialog = () => setDeleteDialogVisible(false);
+
     // Función para obtener datos de la API
     const fillList = async () => {
         try {
@@ -79,8 +88,6 @@ export default function Productos() {
             if (data.status) {
                 setDataCategorias(data.dataset);
             } else {
-                console.log(data);
-                // Alert the user about the error
                 Alert.alert('Error categorias', data.error);
             }
         } catch (error) {
@@ -98,8 +105,6 @@ export default function Productos() {
             if (data.status) {
                 setDataMarcas(data.dataset);
             } else {
-                console.log(data);
-                // Alert the user about the error
                 Alert.alert('Error marcas', data.error);
             }
         } catch (error) {
@@ -117,8 +122,6 @@ export default function Productos() {
             if (data.status) {
                 setDataPresentaciones(data.dataset);
             } else {
-                console.log(data);
-                // Alert the user about the error
                 Alert.alert('Error presentaciones', data.error);
             }
         } catch (error) {
@@ -194,17 +197,17 @@ export default function Productos() {
                 method: 'POST',
                 body: formData
             });
-            if (data.status) {
-                console.log(data.message)
-                Alert.alert(data.message);
+            const response = await data.json();
+            if (response.status) {
+                Alert.alert('Mensaje',response.message);
                 limpiarCampos();
                 fillList();
                 hideModal();
             } else {
-                Alert.alert('Error ' + data.error);
+                Alert.alert('Error',response.error);
             }
         } catch (error) {
-            Alert.alert('No se pudo acceder a la API ' + error);
+            Alert.alert('No se pudo acceder a la API ' + response.error);
         }
     };
 
@@ -236,6 +239,33 @@ export default function Productos() {
             Alert.alert('Error', 'Ocurrió un error al intentar obtener los datos del producto');
         }
     };
+
+        // Confirmar eliminación de registros
+        const confirmarEliminacion = () => {
+            eliminarRegistros(idToDelete);
+        };
+
+        const eliminarRegistros = async (idA) => {
+            try {
+                const formData = new FormData();
+                formData.append('id_producto', idA);
+                const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/producto.php?action=deleteRow`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const response = await data.json();
+                if (response.status) {
+                    Alert.alert(response.message);
+                    fillList();
+                } else {
+                    Alert.alert('Error',response.error);
+                }
+            } catch (error) {
+                Alert.alert('No se pudo acceder a la API ' + response.error);
+            }
+            hideDeleteDialog();
+        };
+    
 
 
     // Ejecuta fillList al montar el componente
@@ -279,7 +309,7 @@ export default function Productos() {
                     <TouchableOpacity style={styles.buttonActualizar} onPress={() => openUpdate(item.id_producto)}>
                         <Text style={styles.botonTexto}>Actualizar</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.buttonEliminar} onPress={() => showDeleteDialog(item.id_administrador)}>
+                    <TouchableOpacity style={styles.buttonEliminar} onPress={() => showDeleteDialog(item.id_producto)}>
                         <Text style={styles.botonTexto}>Eliminar</Text>
                     </TouchableOpacity>
                 </View>
@@ -313,6 +343,9 @@ export default function Productos() {
                         <Button onPress={hideModal} style={styles.closeButton}>
                             <MaterialCommunityIcons name="close-thick" size={20} color="red" />
                         </Button>
+                        <Text style={styles.title}>
+                                    {idToUpdate ? 'Actualizar producto' : 'Agregar producto'}
+                                </Text>
                         <TextInput
                             label="Nombre"
                             value={nombre}
@@ -382,6 +415,16 @@ export default function Productos() {
                             guardar
                         </Button>
                     </Modal>
+                    <Dialog visible={deleteDialogVisible} onDismiss={hideDeleteDialog}>
+                        <Dialog.Title>Advertencia</Dialog.Title>
+                        <Dialog.Content>
+                            <Paragraph>¿Desea eliminar el producto de forma permanente?</Paragraph>
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button onPress={hideDeleteDialog}>Cancelar</Button>
+                            <Button onPress={confirmarEliminacion}>Aceptar</Button>
+                        </Dialog.Actions>
+                    </Dialog>
                 </Portal>
             </View>
         </Provider>
@@ -468,5 +511,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'red',
         borderRadius: 5,
         marginVertical: 5,
+    },
+    title: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 });
