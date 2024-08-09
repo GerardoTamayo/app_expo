@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Constantes from '../utilidades/constante';
 // Importamos los componentes necesarios de react-native y react-native-paper.
-import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Searchbar, Card, Title, Paragraph, Modal, Portal, Text, Button, TextInput, Provider } from 'react-native-paper';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -22,18 +22,19 @@ export default function Productos() {
     const [dataMarcas, setDataMarcas] = useState([]);
     const [dataPresentaciones, setDataPresentaciones] = useState([]);
     const [visible, setVisible] = useState(false);
+    const [idToUpdate, setIdToUpdate] = useState(null);
 
     // Función para mostrar el modal.
     const showModal = () => setVisible(true);
     // Función para ocultar el modal.
     const hideModal = () => {
+        setIdToUpdate(null);
         setVisible(false);
         limpiarCampos();
     };
 
     // Estados para manejar los datos, carga y errores
     const [response, setResponse] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [nombre, setNombre] = useState('');
     const [Fecha, setFecha] = useState('');
     const [Descripcion, setDescripcion] = useState('');
@@ -41,7 +42,6 @@ export default function Productos() {
     const [Categoria, setCategoria] = useState('');
     const [Marca, setMarca] = useState('');
     const [Presentacion, setPresentacion] = useState('');
-    const [error, setError] = useState(null);
 
     // Limpiar campos del formulario
     const limpiarCampos = async () => {
@@ -75,7 +75,6 @@ export default function Productos() {
             const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/categoria.php?action=readAll`, {
                 method: 'GET',
             });
-
             const data = await response.json();
             if (data.status) {
                 setDataCategorias(data.dataset);
@@ -95,7 +94,6 @@ export default function Productos() {
             const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/marca.php?action=readAll`, {
                 method: 'GET',
             });
-
             const data = await response.json();
             if (data.status) {
                 setDataMarcas(data.dataset);
@@ -115,7 +113,6 @@ export default function Productos() {
             const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readAll`, {
                 method: 'GET',
             });
-
             const data = await response.json();
             if (data.status) {
                 setDataPresentaciones(data.dataset);
@@ -153,6 +150,94 @@ export default function Productos() {
         showMode('date');
     };
 
+    // Insertar nuevos registros en la API
+    const insertarProductos = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('nombre_producto', nombre);
+            formData.append('fecha_producto', Fecha);
+            formData.append('descripcion_producto', Descripcion);
+            formData.append('presentacion_producto', Presentacion);
+            formData.append('categoria_producto', Categoria);
+            formData.append('marca_producto', Marca);
+            formData.append('existencias_producto', Existencias);
+            const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/producto.php?action=createRow`, {
+                method: 'POST',
+                body: formData
+            });
+            const response = await data.json();
+            if (response.status) {
+                limpiarCampos();
+                fillList();
+                hideModal();
+                Alert.alert('Mensaje',response.message);
+            } else {
+                Alert.alert('Error',response.error);
+            }
+        } catch (error) {
+            Alert.alert('No se pudo acceder a la API ' + response.error);
+        }
+    };
+
+    const actualizarProductos = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('id_producto', idToUpdate);
+            formData.append('nombre_producto', nombre);
+            formData.append('fecha_producto', Fecha);
+            formData.append('descripcion_producto', Descripcion);
+            formData.append('presentacion_producto', Presentacion);
+            formData.append('categoria_producto', Categoria);
+            formData.append('marca_producto', Marca);
+            formData.append('existencias_producto', Existencias);
+            const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/producto.php?action=updateRow`, {
+                method: 'POST',
+                body: formData
+            });
+            if (data.status) {
+                console.log(data.message)
+                Alert.alert(data.message);
+                limpiarCampos();
+                fillList();
+                hideModal();
+            } else {
+                Alert.alert('Error ' + data.error);
+            }
+        } catch (error) {
+            Alert.alert('No se pudo acceder a la API ' + error);
+        }
+    };
+
+    const openUpdate = async (id) => {
+        const formData = new FormData();
+        formData.append('id_producto', id);
+        try {
+            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/producto.php?action=readOne`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.status) {
+                const row = data.dataset;
+                setIdToUpdate(row.id_producto);
+                setNombre(row.nombre_producto);
+                setFecha(row.fecha_vencimiento);
+                setDescripcion(row.descripcion);
+                setExistencias(String(row.existencias_producto));
+                setCategoria(row.id_categoria);
+                setMarca(row.id_marca);
+                setPresentacion(row.id_tipo_presentacion);
+                showModal();
+            } else {
+                Alert.alert('Error', data.error || 'No se pudo obtener la información del producto');
+            }
+        } catch (error) {
+            console.log('Error en la solicitud:', error);
+            Alert.alert('Error', 'Ocurrió un error al intentar obtener los datos del producto');
+        }
+    };
+
+
     // Ejecuta fillList al montar el componente
     useEffect(() => {
         fillList();
@@ -171,6 +256,16 @@ export default function Productos() {
         }, [])
     );
 
+    // Identificador de si se ingresa o se actualiza
+    const handleSubmit = () => {
+        if (idToUpdate) {
+            actualizarProductos();
+        } else {
+            insertarProductos();
+        }
+    };
+
+
     // Función que renderiza cada ítem en la lista.
     const renderItem = ({ item }) => (
         <Card style={styles.card}>
@@ -180,6 +275,14 @@ export default function Productos() {
                 <Paragraph>Existencias: {item.existencias_producto}</Paragraph>
                 <Paragraph>Marca: {item.nombre_marca}</Paragraph>
                 <Paragraph>Descripcion: {item.descripcion}</Paragraph>
+                <View style={styles.containerButtons}>
+                    <TouchableOpacity style={styles.buttonActualizar} onPress={() => openUpdate(item.id_producto)}>
+                        <Text style={styles.botonTexto}>Actualizar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.buttonEliminar} onPress={() => showDeleteDialog(item.id_administrador)}>
+                        <Text style={styles.botonTexto}>Eliminar</Text>
+                    </TouchableOpacity>
+                </View>
             </Card.Content>
         </Card>
     );
@@ -212,24 +315,22 @@ export default function Productos() {
                         </Button>
                         <TextInput
                             label="Nombre"
-                            // value={newProduct.name}
+                            value={nombre}
                             onChangeText={text => setNombre(text)}
                             style={styles.input}
                         />
                         <TextInput
-                            label="Descripción"
-                            // value={newProduct.description}
-                            onChangeText={text => setDescripcion(text)}
+                            label="Existencias"
+                            value={Existencias}
+                            onChangeText={text => setExistencias(text)}
                             style={styles.input}
                         />
                         <TextInput
-                            label="Existencias"
-                            // value={newProduct.stock}
-                            onChangeText={text => setExistencias(text)}
-                            keyboardType="numeric"
+                            label="Descripción"
+                            value={Descripcion}
+                            onChangeText={text => setDescripcion(text)}
                             style={styles.input}
                         />
-
                         <View style={styles.contenedorFecha}>
                             <TouchableOpacity onPress={showDatepicker}><Text style={styles.fechaSeleccionar}>Seleccionar fecha vencimiento:</Text></TouchableOpacity>
                             <Text style={styles.fecha}>Seleccion: {Fecha}</Text>
@@ -244,44 +345,41 @@ export default function Productos() {
                                 />
                             )}
                         </View>
-                        <View>
-                            <View style={styles.pickerContainer}>
-                                <RNPickerSelect
-                                    onValueChange={(value) => setMarca(value)}
-                                    placeholder={{ label: 'Seleccione una marca', value: null }}
-                                    items={dataMarcas.map(marca => ({
-                                        label: marca.nombre_marca,
-                                        value: marca.id_marca,
-                                    }))}
-                                />
-                            </View>
+                        <View style={styles.pickerContainer}>
+                            <RNPickerSelect
+                                onValueChange={(value) => setMarca(value)}
+                                value={Marca}
+                                placeholder={{ label: 'Seleccione una marca', value: null }}
+                                items={dataMarcas.map(marca => ({
+                                    label: marca.nombre_marca,
+                                    value: marca.id_marca,
+                                }))}
+                            />
                         </View>
-                        <View>
-                            <View style={styles.pickerContainer}>
-                                <RNPickerSelect
-                                    onValueChange={(value) => setPresentacion(value)}
-                                    placeholder={{ label: 'Seleccione una presentación', value: null }}
-                                    items={dataPresentaciones.map(presentacion => ({
-                                        label: presentacion.tipo_presentacion,
-                                        value: presentacion.id_tipo_presentacion,
-                                    }))}
-                                />
-                            </View>
+                        <View style={styles.pickerContainer}>
+                            <RNPickerSelect
+                                onValueChange={(value) => setPresentacion(value)}
+                                value={Presentacion}
+                                placeholder={{ label: 'Seleccione una presentación', value: null }}
+                                items={dataPresentaciones.map(presentacion => ({
+                                    label: presentacion.tipo_presentacion,
+                                    value: presentacion.id_tipo_presentacion,
+                                }))}
+                            />
                         </View>
-                        <View>
-                            <View style={styles.pickerContainer}>
-                                <RNPickerSelect
-                                    onValueChange={(value) => setCategoria(value)}
-                                    placeholder={{ label: 'Seleccione una categoría', value: null }}
-                                    items={dataCategorias.map(categoria => ({
-                                        label: categoria.nombre_categoria,
-                                        value: categoria.id_categoria,
-                                    }))}
-                                />
-                            </View>
+                        <View style={styles.pickerContainer}>
+                            <RNPickerSelect
+                                onValueChange={(value) => setCategoria(value)}
+                                value={Categoria}
+                                placeholder={{ label: 'Seleccione una categoría', value: null }}
+                                items={dataCategorias.map(categoria => ({
+                                    label: categoria.nombre_categoria,
+                                    value: categoria.id_categoria,
+                                }))}
+                            />
                         </View>
-                        <Button mode="contained" style={styles.saveButton}>
-                            Guardar
+                        <Button mode="contained" style={styles.saveButton} onPress={handleSubmit}>
+                            guardar
                         </Button>
                     </Modal>
                 </Portal>
@@ -350,5 +448,25 @@ const styles = StyleSheet.create({
     fechaSeleccionar: {
         paddingBottom: 15,
         color: '#000',
+    },
+    containerButtons: {
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+    },
+    buttonActualizar: {
+        alignItems: 'center',
+        padding: 10,
+        width: 90,
+        backgroundColor: 'skyblue',
+        borderRadius: 5,
+        marginVertical: 5,
+    },
+    buttonEliminar: {
+        alignItems: 'center',
+        padding: 10,
+        width: 90,
+        backgroundColor: 'red',
+        borderRadius: 5,
+        marginVertical: 5,
     },
 });
