@@ -148,6 +148,7 @@ export default function Categorias() { // Define el componente principal llamado
         }
         hideDeleteDialog(); // Oculta el cuadro de diálogo de eliminación.
     };
+    
 
     useEffect(() => { // Hook para ejecutar fillList cuando el componente se monta.
         fillList();
