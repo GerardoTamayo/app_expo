@@ -11,6 +11,7 @@ export default function Codigo({ navigation }) {
         navigation.navigate('NewPassword');
     };
 
+    // regresara los datos que quiere corregir
     return (
         <View style={styles.container}>
             <Text style={styles.label}>Ingresa tu correo electrónico</Text>
