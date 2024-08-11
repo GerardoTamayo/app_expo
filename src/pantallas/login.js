@@ -11,6 +11,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'reac
 // Definimos el componente de Login como una función.
 export default function Login({ navigation }) {
     // Obtiene la IP desde las constantes
+    // Esto es lo que se ocupa para mandar datos de la web
     const ip = Constantes.IP;
 
     // Definición de estados locales
