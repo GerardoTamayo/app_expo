@@ -112,7 +112,7 @@ function Mytabs() {
                 options={{
                     tabBarLabel: 'Perfil',
                     tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="database-arrow-up-outline" size={24} color="black" />
+                        <MaterialCommunityIcons name="account-lock-open" size={24} color="black" />
                     ),
                     headerShown: true,
                     headerStyle: {
