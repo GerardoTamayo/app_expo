@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Constantes from '../utilidades/constante';
-import { View, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Searchbar, Card, Paragraph, Modal, Portal, Text, Button, TextInput, Provider, Dialog } from 'react-native-paper';
+import { View, FlatList, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
+import { Searchbar, Card, Paragraph, Modal, Portal, Text, Button, Provider, Dialog, TextInput } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as ImagePicker from "expo-image-picker";
+import imageData from '../utilidades/imageData';
+import BrandCard from '../componentes/cards/BrandCard';
+import foto from '../../assets/default.png';
 
 export default function Marcas() {
     const ip = Constantes.IP;
@@ -12,9 +16,8 @@ export default function Marcas() {
     const [idToUpdate, setIdToUpdate] = useState(null);
     const [idToDelete, setIdToDelete] = useState(null);
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-
     const [response, setResponse] = useState([]);
-    const [Marca, setMarca] = useState(''); // Aquí asegúrate de que sea Marca con M mayúscula
+    const [Marca, setMarca] = useState('');
     const [Imagen, setImagen] = useState('');
 
     const showModal = () => setVisible(true);
@@ -26,6 +29,7 @@ export default function Marcas() {
 
     const limpiarCampos = () => {
         setMarca('');
+        setImagen('');
     };
 
     const showDeleteDialog = (id) => {
@@ -42,6 +46,7 @@ export default function Marcas() {
             });
             const data = await response.json();
             setResponse(data.dataset);
+            console.log(data.dataset);
         } catch (error) {
             console.error(error);
             Alert.alert('Error');
@@ -52,7 +57,22 @@ export default function Marcas() {
         try {
             const formData = new FormData();
             formData.append('marca', Marca);
-            formData.append('imagen_marca', Imagen);
+            if (Imagen) {
+                const uriParts = Imagen.split('.');
+                const fileType = uriParts[uriParts.length - 1];
+                formData.append('imagen_marca', {
+                    uri: Imagen,
+                    name: `photo.${fileType}`,
+                    type: `image/${fileType}`,
+                });
+            } else {
+                formData.append('imagen_marca', {
+                    uri: foto,
+                    name: 'default.png',
+                    type: 'image/png',
+                });
+            }
+
             const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/marca.php?action=createRow`, {
                 method: 'POST',
                 body: formData
@@ -80,12 +100,21 @@ export default function Marcas() {
         }
     };
 
-
-
     const actualizarMarcas = async () => {
         try {
             const formData = new FormData();
             formData.append('marca', Marca);
+            if (Imagen) {
+                const uriParts = Imagen.split('.');
+                const fileType = uriParts[uriParts.length - 1];
+                formData.append('imagen_marca', {
+                    uri: Imagen,
+                    name: `photo.${fileType}`,
+                    type: `image/${fileType}`,
+                });
+            }
+            formData.append('id_marca', idToUpdate);
+
             const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/marca.php?action=updateRow`, {
                 method: 'POST',
                 body: formData
@@ -117,6 +146,8 @@ export default function Marcas() {
                 const row = data.dataset;
                 setIdToUpdate(row.id_marca);
                 setMarca(row.nombre_marca);
+                const imageUrl = await imageData('marcas', row.imagen);
+                setImagen(imageUrl);
                 showModal();
             } else {
                 Alert.alert('Error', data.error || 'No se pudo obtener la información del producto');
@@ -152,6 +183,19 @@ export default function Marcas() {
         hideDeleteDialog();
     };
 
+    const pickImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setImagen(result.assets[0].uri);
+        }
+    };
+
     useEffect(() => {
         fillList();
     }, []);
@@ -170,20 +214,9 @@ export default function Marcas() {
         }
     };
 
+
     const renderItem = ({ item }) => (
-        <Card style={styles.card}>
-            <Card.Content>
-                <Paragraph>Marca: {item.nombre_marca}</Paragraph>
-                <View style={styles.containerButtons}>
-                    <TouchableOpacity style={styles.buttonActualizar} onPress={() => openUpdate(item.id_marca)}>
-                        <Text style={styles.botonTexto}>Actualizar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.buttonEliminar} onPress={() => showDeleteDialog(item.id_marca)}>
-                        <Text style={styles.botonTexto}>Eliminar</Text>
-                    </TouchableOpacity>
-                </View>
-            </Card.Content>
-        </Card>
+        <BrandCard item={item} onPressUpdate={openUpdate} onPressDelete={showDeleteDialog} />
     );
 
     return (
@@ -212,28 +245,29 @@ export default function Marcas() {
                         </Text>
                         <TextInput
                             label="Marca"
-                            value={Marca} // Aquí se usa Marca con M mayúscula
+                            value={Marca}
                             onChangeText={text => setMarca(text)}
                             style={styles.input}
                         />
-                        <TextInput
-                            label="Imagen"
-                            value={Imagen} // Aquí se usa Marca con M mayúscula
-                            onChangeText={text => setImagen(text)}
-                            style={styles.input}
-                        />
-                        <Button mode="contained" style={styles.saveButton} onPress={handleSubmit}>
-                            Guardar
+                        <TouchableOpacity onPress={pickImage}>
+                            <Image
+                                source={Imagen ? { uri: Imagen } : foto}
+                                style={styles.image}
+                            />
+                            <Text>{Imagen ? 'Cambiar Imagen' : 'Seleccionar Imagen'}</Text>
+                        </TouchableOpacity>
+                        <Button mode="contained" onPress={handleSubmit}>
+                            {idToUpdate ? 'Actualizar' : 'Agregar'}
                         </Button>
                     </Modal>
                     <Dialog visible={deleteDialogVisible} onDismiss={hideDeleteDialog}>
-                        <Dialog.Title>Advertencia</Dialog.Title>
+                        <Dialog.Title>Confirmación</Dialog.Title>
                         <Dialog.Content>
-                            <Paragraph>¿Desea eliminar la marca de forma permanente?</Paragraph>
+                            <Paragraph>¿Estás seguro de que deseas eliminar esta marca?</Paragraph>
                         </Dialog.Content>
                         <Dialog.Actions>
                             <Button onPress={hideDeleteDialog}>Cancelar</Button>
-                            <Button onPress={confirmarEliminacion}>Aceptar</Button>
+                            <Button onPress={confirmarEliminacion}>Eliminar</Button>
                         </Dialog.Actions>
                     </Dialog>
                 </Portal>
@@ -264,7 +298,10 @@ const styles = StyleSheet.create({
         margin: 20,
     },
     input: {
-        marginBottom: 10,
+        marginBottom: 7,
+        borderWidth: 1,
+        borderRadius: 5,
+        backgroundColor: '#fff',
     },
     saveButton: {
         marginTop: 5,
@@ -297,5 +334,17 @@ const styles = StyleSheet.create({
     containerButtons: {
         justifyContent: 'space-between',
         flexDirection: 'row',
+    },
+    image: {
+        width: 100,
+        height: 100,
+        marginBottom: 16,
+    },
+    imagePicker: {
+        width: 150,
+        height: 150,
+        backgroundColor: '#ececec',
+        marginBottom: 16,
+        alignSelf: 'center',
     },
 });

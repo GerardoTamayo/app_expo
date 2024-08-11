@@ -122,7 +122,10 @@ const styles = StyleSheet.create({
         margin: 20,
     },
     input: {
-        marginBottom: 10,
+        marginBottom: 7,
+        borderWidth: 1,
+        borderRadius: 5,
+        backgroundColor: '#fff',
     },
     saveButton: {
         marginTop: 5,
