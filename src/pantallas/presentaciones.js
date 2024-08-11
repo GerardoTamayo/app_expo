@@ -37,7 +37,7 @@ export default function Presentaciones() {
 
     const fillList = async () => { // Función para llenar la lista de categorías obteniendo los datos del servidor.
         try {
-            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readAll`, {
+            const response = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readAll', {
                 method: 'GET'
             });
             const data = await response.json(); // Convierte la respuesta en JSON.
@@ -52,7 +52,7 @@ export default function Presentaciones() {
         try {
             const formData = new FormData();
             formData.append('tipo_presentacion', Presentacion); // Agrega el nombre de la categoría al FormData.
-            const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=createRow`, {
+            const data = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=createRow', {
                 method: 'POST',
                 body: formData
             });
@@ -84,7 +84,7 @@ export default function Presentaciones() {
             const formData = new FormData();
             formData.append('id_presentacion', idToUpdate); // Agrega el ID de la categoría al FormData.
             formData.append('tipo_presentacion', Presentacion); // Agrega el nombre actualizado de la categoría.
-            const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=updateRow`, {
+            const data = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=updateRow', {
                 method: 'POST',
                 body: formData
             });
@@ -106,14 +106,14 @@ export default function Presentaciones() {
         const formData = new FormData();
         formData.append('id_presentacion', id); // Agrega el ID de la categoría al FormData.
         try {
-            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readOne`, {
+            const response = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readOne', {
                 method: 'POST',
                 body: formData
             });
             const data = await response.json(); // Convierte la respuesta en JSON.
             if (data.status) { // Si la solicitud fue exitosa.
                 const row = data.dataset; // Obtiene la fila de datos de la categoría.
-                setIdToUpdate(row.id_presentacion); // Guarda el ID de la categoría para la actualización.
+                setIdToUpdate(row.id_tipo_presentacion); // Guarda el ID de la categoría para la actualización.
                 setPresentacion(row.tipo_presentacion); // Establece el nombre de la categoría en el estado.
                 showModal(); // Muestra el modal.
             } else {
@@ -132,8 +132,8 @@ export default function Presentaciones() {
     const eliminarRegistros = async (idA) => { // Función para eliminar una categoría de la base de datos.
         try {
             const formData = new FormData();
-            formData.append('id_categoria', idA); // Agrega el ID de la categoría al FormData.
-            const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/categoria.php?action=deleteRow`, {
+            formData.append('id_presentacion', idA); // Agrega el ID de la categoría al FormData.
+            const data = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=deleteRow', {
                 method: 'POST',
                 body: formData
             });
@@ -175,10 +175,10 @@ export default function Presentaciones() {
             <Card.Content>
                 <Paragraph>Presentacion: {item.tipo_presentacion}</Paragraph>
                 <View style={styles.containerButtons}>
-                    <TouchableOpacity style={styles.buttonActualizar} onPress={() => openUpdate(item.id_presentacion)}>
+                    <TouchableOpacity style={styles.buttonActualizar} onPress={() => openUpdate(item.id_tipo_presentacion)}>
                         <Text style={styles.botonTexto}>Actualizar</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.buttonEliminar} onPress={() => showDeleteDialog(item.id_presentacion)}>
+                    <TouchableOpacity style={styles.buttonEliminar} onPress={() => showDeleteDialog(item.id_tipo_presentacion)}>
                         <Text style={styles.botonTexto}>Eliminar</Text>
                     </TouchableOpacity>
                 </View>
@@ -204,7 +204,7 @@ export default function Presentaciones() {
                 <FlatList
                     data={response} // Datos a mostrar en la lista.
                     renderItem={renderItem} // Función para renderizar cada elemento de la lista.
-                    keyExtractor={item => item.id_presentacion.toString()} // Identificador único para cada elemento.
+                    keyExtractor={item => item.id_tipo_presentacion.toString()} // Identificador único para cada elemento.
                 />
                 <Portal>
                     {/* Modal para agregar o actualizar una categoría */}

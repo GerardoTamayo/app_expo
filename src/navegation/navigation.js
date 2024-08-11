@@ -130,21 +130,7 @@ function Mytabs() {
                 }}
             />
 
-            <Tab.Screen
-                name="Perfil" // Etiqueta que se muestra en la barra de pestañas para esta pantalla.
-                component={Perfil}
-                options={{
-                    tabBarLabel: 'Perfil',
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="account-lock-open" size={24} color="black" />
-                        // Ícono que se muestra en la barra de pestañas, utilizando un ícono de MaterialCommunityIcons.
-                    ),
-                    headerShown: true, // Muestra el encabezado en la parte superior de la pantalla.
-                    headerStyle: {
-                        backgroundColor: '#9368EE'
-                    },
-                }}
-            />
+            
         </Tab.Navigator>
     );
 }
