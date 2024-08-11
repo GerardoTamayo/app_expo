@@ -13,7 +13,7 @@ export default function Categorias() { // Define el componente principal llamado
     const [idToDelete, setIdToDelete] = useState(null); // Estado para manejar el ID de la categoría a eliminar.
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false); // Estado para manejar la visibilidad del cuadro de diálogo de eliminación.
 
-    const [response, setResponse] = useState([]); // Estado para almacenar la respuesta del servidor.
+    const [response, setResponse] = useState([]); // Estado para almacenar la respuesta del servidor .
     const [Categoria, setCategoria] = useState('');  // Estado para manejar el nombre de la categoría.
     const showModal = () => setVisible(true); // Función para mostrar el modal.
     const hideModal = () => { // Función para ocultar el modal y limpiar los campos.
