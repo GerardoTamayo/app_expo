@@ -10,7 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Definimos el componente de Inicio como una función.
 export default function Inicio({ navigation }) {
-    // Obtiene la IP del archivo de constantes.
+    // Obtiene la IP del archivo de constantes .
     const ip = Constantes.IP;
 
     const handleLogout = async () => {
