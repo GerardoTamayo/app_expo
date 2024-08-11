@@ -54,67 +54,92 @@ function Mytabs() {
                 name="Productos"
                 component={Productos}
                 options={{
-                    tabBarLabel: 'Productos',
+                    tabBarLabel: 'Productos', // Etiqueta que se muestra en la barra de pestañas para esta pantalla.
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="inbox-multiple" size={24} color="black" />
+                        // Ícono que se muestra en la barra de pestañas, utilizando un ícono de MaterialCommunityIcons.
                     ),
-                    headerShown: true,
+                    headerShown: true, // Muestra el encabezado en la parte superior de la pantalla.
                     headerStyle: {
-                        backgroundColor: '#9368EE'
+                        backgroundColor: '#9368EE' // Establece el color de fondo del encabezado.
                     },
                 }}
             />
+
             <Tab.Screen
                 name="Categorias"
                 component={Categoria}
                 options={{
-                    tabBarLabel: 'Categorias',
+                    tabBarLabel: 'Categorias', // Etiqueta que se muestra en la barra de pestañas para esta pantalla.
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="text-box-outline" size={24} color="black" />
+                        // Ícono que se muestra en la barra de pestañas, utilizando un ícono de MaterialCommunityIcons.
                     ),
-                    headerShown: true,
+                    headerShown: true, // Muestra el encabezado en la parte superior de la pantalla.
                     headerStyle: {
-                        backgroundColor: '#9368EE'
+                        backgroundColor: '#9368EE' // Establece el color de fondo del encabezado.
                     },
                 }}
             />
+
             <Tab.Screen
                 name="Marcas"
                 component={Marca}
                 options={{
-                    tabBarLabel: 'Marcas',
+                    tabBarLabel: 'Marcas', // Etiqueta que se muestra en la barra de pestañas para esta pantalla.
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="label-multiple" size={24} color="black" />
+                        // Ícono que se muestra en la barra de pestañas, utilizando un ícono de MaterialCommunityIcons.
                     ),
-                    headerShown: true,
+                    headerShown: true, // Muestra el encabezado en la parte superior de la pantalla.
                     headerStyle: {
-                        backgroundColor: '#9368EE'
+                        backgroundColor: '#9368EE' // Establece el color de fondo del encabezado.
                     },
                 }}
             />
+
             <Tab.Screen
                 name="Presentaciones"
                 component={Presentaciones}
                 options={{
-                    tabBarLabel: 'Presentaciones',
+                    tabBarLabel: 'Presentaciones', // Etiqueta que se muestra en la barra de pestañas para esta pantalla.
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="database-arrow-up-outline" size={24} color="black" />
+                        // Ícono que se muestra en la barra de pestañas, utilizando un ícono de MaterialCommunityIcons.
                     ),
-                    headerShown: true,
+                    headerShown: true, // Muestra el encabezado en la parte superior de la pantalla.
                     headerStyle: {
-                        backgroundColor: '#9368EE'
+                        backgroundColor: '#9368EE' // Establece el color de fondo del encabezado.
                     },
                 }}
             />
+
             <Tab.Screen
                 name="Perfil"
+                component={Perfil}
+                options={{
+                    tabBarLabel: 'Perfil', // Etiqueta que se muestra en la barra de pestañas para esta pantalla.
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons name="account-lock-open" size={24} color="black" />
+                        // Ícono que se muestra en la barra de pestañas, utilizando un ícono de MaterialCommunityIcons.
+                    ),
+                    headerShown: true, // Muestra el encabezado en la parte superior de la pantalla.
+                    headerStyle: {
+                        backgroundColor: '#9368EE' // Establece el color de fondo del encabezado.
+                    },
+                }}
+            />
+
+            <Tab.Screen
+                name="Perfil" // Etiqueta que se muestra en la barra de pestañas para esta pantalla.
                 component={Perfil}
                 options={{
                     tabBarLabel: 'Perfil',
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="account-lock-open" size={24} color="black" />
+                        // Ícono que se muestra en la barra de pestañas, utilizando un ícono de MaterialCommunityIcons.
                     ),
-                    headerShown: true,
+                    headerShown: true, // Muestra el encabezado en la parte superior de la pantalla.
                     headerStyle: {
                         backgroundColor: '#9368EE'
                     },

@@ -10,35 +10,41 @@ import BrandCard from '../componentes/cards/BrandCard';
 import foto from '../../assets/default.png';
 
 export default function Marcas() {
-    const ip = Constantes.IP;
-    const [searchQuery, setSearchQuery] = useState('');
-    const [visible, setVisible] = useState(false);
-    const [idToUpdate, setIdToUpdate] = useState(null);
-    const [idToDelete, setIdToDelete] = useState(null);
-    const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-    const [response, setResponse] = useState([]);
-    const [Marca, setMarca] = useState('');
-    const [Imagen, setImagen] = useState('');
+    const ip = Constantes.IP; // Dirección IP para la API.
+    const [searchQuery, setSearchQuery] = useState(''); // Estado para almacenar el texto de búsqueda.
+    const [visible, setVisible] = useState(false); // Estado para controlar la visibilidad del modal.
+    const [idToUpdate, setIdToUpdate] = useState(null); // Estado para almacenar el ID de la marca a actualizar.
+    const [idToDelete, setIdToDelete] = useState(null); // Estado para almacenar el ID de la marca a eliminar.
+    const [deleteDialogVisible, setDeleteDialogVisible] = useState(false); // Estado para controlar la visibilidad del diálogo de eliminación.
+    const [response, setResponse] = useState([]); // Estado para almacenar la lista de marcas obtenidas de la API.
+    const [Marca, setMarca] = useState(''); // Estado para almacenar el nombre de la marca.
+    const [Imagen, setImagen] = useState(''); // Estado para almacenar la URI de la imagen de la marca.
 
+    // Mostrar el modal de agregar/actualizar marca
     const showModal = () => setVisible(true);
+    // Ocultar el modal y limpiar los campos
     const hideModal = () => {
         setIdToUpdate(null);
         setVisible(false);
         limpiarCampos();
     };
 
+    // Limpiar los campos de marca e imagen
     const limpiarCampos = () => {
         setMarca('');
         setImagen('');
     };
 
+    // Mostrar el diálogo de confirmación de eliminación
     const showDeleteDialog = (id) => {
         setIdToDelete(id);
         setDeleteDialogVisible(true);
     };
 
+    // Ocultar el diálogo de confirmación de eliminación
     const hideDeleteDialog = () => setDeleteDialogVisible(false);
 
+    // Obtener la lista de marcas de la API
     const fillList = async () => {
         try {
             const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/marca.php?action=readAll`, {
@@ -49,10 +55,11 @@ export default function Marcas() {
             console.log(data.dataset);
         } catch (error) {
             console.error(error);
-            Alert.alert('Error');
+            Alert.alert('Error', 'No se pudo obtener la lista de marcas');
         }
     };
 
+    // Insertar una nueva marca en la API
     const insertarMarcas = async () => {
         try {
             const formData = new FormData();
@@ -100,6 +107,7 @@ export default function Marcas() {
         }
     };
 
+    // Actualizar una marca existente en la API
     const actualizarMarcas = async () => {
         try {
             const formData = new FormData();
@@ -129,10 +137,11 @@ export default function Marcas() {
                 Alert.alert('Error', response.error);
             }
         } catch (error) {
-            Alert.alert('No se pudo acceder a la API ' + response.error);
+            Alert.alert('No se pudo acceder a la API', error.message || error.toString());
         }
     };
 
+    // Abrir el modal para actualizar una marca existente
     const openUpdate = async (id) => {
         const formData = new FormData();
         formData.append('id_marca', id);
@@ -150,18 +159,20 @@ export default function Marcas() {
                 setImagen(imageUrl);
                 showModal();
             } else {
-                Alert.alert('Error', data.error || 'No se pudo obtener la información del producto');
+                Alert.alert('Error', data.error || 'No se pudo obtener la información de la marca');
             }
         } catch (error) {
             console.log('Error en la solicitud:', error);
-            Alert.alert('Error', 'Ocurrió un error al intentar obtener los datos del producto');
+            Alert.alert('Error', 'Ocurrió un error al intentar obtener los datos de la marca');
         }
     };
 
+    // Confirmar la eliminación de una marca
     const confirmarEliminacion = () => {
         eliminarRegistros(idToDelete);
     };
 
+    // Eliminar una marca de la API
     const eliminarRegistros = async (idA) => {
         try {
             const formData = new FormData();
@@ -178,11 +189,12 @@ export default function Marcas() {
                 Alert.alert('Error', response.error);
             }
         } catch (error) {
-            Alert.alert('No se pudo acceder a la API ' + response.error);
+            Alert.alert('No se pudo acceder a la API', error.message || error.toString());
         }
         hideDeleteDialog();
     };
 
+    // Seleccionar una imagen desde la galería
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -197,15 +209,16 @@ export default function Marcas() {
     };
 
     useEffect(() => {
-        fillList();
+        fillList(); // Llamar a la función para llenar la lista de marcas cuando el componente se monta
     }, []);
 
     useFocusEffect(
         useCallback(() => {
-            fillList();
+            fillList(); // Volver a llenar la lista de marcas cuando la pantalla obtiene el foco
         }, [])
     );
 
+    // Manejar la sumisión del formulario (agregar o actualizar una marca)
     const handleSubmit = () => {
         if (idToUpdate) {
             actualizarMarcas();
@@ -214,7 +227,7 @@ export default function Marcas() {
         }
     };
 
-
+    // Renderizar cada elemento de la lista de marcas
     const renderItem = ({ item }) => (
         <BrandCard item={item} onPressUpdate={openUpdate} onPressDelete={showDeleteDialog} />
     );
@@ -222,44 +235,55 @@ export default function Marcas() {
     return (
         <Provider>
             <View style={styles.container}>
+                {/* Barra de búsqueda para filtrar marcas */}
                 <Searchbar
                     placeholder="Buscar marca"
                     value={searchQuery}
+                    onChangeText={setSearchQuery} // Agrega función para manejar cambios en el texto de búsqueda
                     style={styles.searchbar}
                 />
+                {/* Botón para abrir el modal de agregar/actualizar marca */}
                 <Button onPress={showModal} style={styles.addButton}>
                     <MaterialCommunityIcons name="plus-circle-outline" size={22} color="#9368EE" />
                 </Button>
+                {/* Lista de marcas */}
                 <FlatList
                     data={response}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id_marca.toString()}
+                    renderItem={renderItem} // Renderiza cada ítem de la lista usando renderItem
+                    keyExtractor={item => item.id_marca.toString()} // Usa id_marca como clave única para cada ítem
                 />
                 <Portal>
+                    {/* Modal para agregar o actualizar una marca */}
                     <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.modalContainer}>
+                        {/* Botón para cerrar el modal */}
                         <Button onPress={hideModal} style={styles.closeButton}>
                             <MaterialCommunityIcons name="close-thick" size={20} color="red" />
                         </Button>
+                        {/* Título del modal basado en si se está actualizando o agregando */}
                         <Text style={styles.title}>
                             {idToUpdate ? 'Actualizar marca' : 'Agregar marca'}
                         </Text>
+                        {/* Campo de texto para ingresar el nombre de la marca */}
                         <TextInput
                             label="Marca"
                             value={Marca}
-                            onChangeText={text => setMarca(text)}
+                            onChangeText={text => setMarca(text)} // Actualiza el estado Marca cuando cambia el texto
                             style={styles.input}
                         />
+                        {/* Botón para seleccionar una imagen desde la galería */}
                         <TouchableOpacity onPress={pickImage}>
                             <Image
-                                source={Imagen ? { uri: Imagen } : foto}
+                                source={Imagen ? { uri: Imagen } : foto} // Muestra la imagen seleccionada o una imagen predeterminada
                                 style={styles.image}
                             />
                             <Text>{Imagen ? 'Cambiar Imagen' : 'Seleccionar Imagen'}</Text>
                         </TouchableOpacity>
+                        {/* Botón para enviar el formulario */}
                         <Button mode="contained" onPress={handleSubmit}>
                             {idToUpdate ? 'Actualizar' : 'Agregar'}
                         </Button>
                     </Modal>
+                    {/* Diálogo de confirmación para eliminar una marca */}
                     <Dialog visible={deleteDialogVisible} onDismiss={hideDeleteDialog}>
                         <Dialog.Title>Confirmación</Dialog.Title>
                         <Dialog.Content>

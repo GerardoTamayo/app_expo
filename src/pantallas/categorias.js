@@ -126,7 +126,7 @@ export default function Categorias() { // Define el componente principal llamado
     const confirmarEliminacion = () => { // Función para confirmar la eliminación de una categoría.
         eliminarRegistros(idToDelete); // Llama a la función para eliminar la categoría.
     };
-    
+
 
     const eliminarRegistros = async (idA) => { // Función para eliminar una categoría de la base de datos.
         try {
@@ -148,7 +148,7 @@ export default function Categorias() { // Define el componente principal llamado
         }
         hideDeleteDialog(); // Oculta el cuadro de diálogo de eliminación.
     };
-    
+
 
     useEffect(() => { // Hook para ejecutar fillList cuando el componente se monta.
         fillList();
@@ -187,45 +187,56 @@ export default function Categorias() { // Define el componente principal llamado
     return ( // Renderiza la interfaz de usuario.
         <Provider>
             <View style={styles.container}>
+                {/* Barra de búsqueda para filtrar categorías */}
                 <Searchbar
-                    placeholder="Buscar categoria"
-                    value={searchQuery}
-                    style={styles.searchbar}
+                    placeholder="Buscar categoria" // Texto de marcador para la barra de búsqueda.
+                    value={searchQuery} // Valor actual de la búsqueda.
+                    style={styles.searchbar} // Aplicación de estilos a la barra de búsqueda.
                 />
+                {/* Botón para mostrar el modal de agregar o actualizar categoría */}
                 <Button onPress={showModal} style={styles.addButton}>
                     <MaterialCommunityIcons name="plus-circle-outline" size={22} color="#9368EE" />
+                    {/* Ícono de MaterialCommunityIcons para el botón de agregar */}
                 </Button>
+                {/* Lista de categorías */}
                 <FlatList
-                    data={response}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id_categoria.toString()}
+                    data={response} // Datos a mostrar en la lista.
+                    renderItem={renderItem} // Función para renderizar cada elemento de la lista.
+                    keyExtractor={item => item.id_categoria.toString()} // Identificador único para cada elemento.
                 />
                 <Portal>
+                    {/* Modal para agregar o actualizar una categoría */}
                     <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.modalContainer}>
                         <Button onPress={hideModal} style={styles.closeButton}>
                             <MaterialCommunityIcons name="close-thick" size={20} color="red" />
+                            {/* Ícono de MaterialCommunityIcons para cerrar el modal */}
                         </Button>
                         <Text style={styles.title}>
                             {idToUpdate ? 'Actualizar categoria' : 'Agregar categoria'}
+                            {/* Texto que cambia según si se está actualizando o agregando una categoría */}
                         </Text>
                         <TextInput
-                            label="Categoria"
-                            value={Categoria} 
-                            onChangeText={text => setCategoria(text)}
-                            style={styles.input}
+                            label="Categoria" // Etiqueta del campo de texto.
+                            value={Categoria} // Valor actual del campo de texto.
+                            onChangeText={text => setCategoria(text)} // Función para actualizar el valor del campo de texto.
+                            style={styles.input} // Aplicación de estilos al campo de texto.
                         />
                         <Button mode="contained" style={styles.saveButton} onPress={handleSubmit}>
                             Guardar
+                            {/* Botón para guardar los cambios */}
                         </Button>
                     </Modal>
+                    {/* Diálogo de confirmación para eliminar una categoría */}
                     <Dialog visible={deleteDialogVisible} onDismiss={hideDeleteDialog}>
                         <Dialog.Title>Advertencia</Dialog.Title>
                         <Dialog.Content>
                             <Paragraph>¿Desea eliminar la categoria de forma permanente?</Paragraph>
+                            {/* Mensaje en el diálogo de confirmación */}
                         </Dialog.Content>
                         <Dialog.Actions>
                             <Button onPress={hideDeleteDialog}>Cancelar</Button>
                             <Button onPress={confirmarEliminacion}>Aceptar</Button>
+                            {/* Botones para cancelar o confirmar la eliminación */}
                         </Dialog.Actions>
                     </Dialog>
                 </Portal>
@@ -236,58 +247,55 @@ export default function Categorias() { // Define el componente principal llamado
 
 const styles = StyleSheet.create({ // Estilos para los componentes.
     container: {
-        flex: 1,
-        paddingTop: 20,
-        paddingHorizontal: 10,
+        flex: 1, // Ocupa todo el espacio disponible.
+        paddingTop: 20, // Espacio en la parte superior.
+        paddingHorizontal: 10, // Espacio horizontal.
     },
     searchbar: {
-        marginBottom: 10,
-    },
-    card: {
-        marginBottom: 10,
+        marginBottom: 10, // Espacio debajo de la barra de búsqueda.
     },
     addButton: {
-        marginTop: 5,
-        alignSelf: "flex-end",
+        marginTop: 5, // Espacio en la parte superior del botón.
+        alignSelf: "flex-end", // Alineación del botón al final del contenedor.
     },
     modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        margin: 20,
+        backgroundColor: 'white', // Color de fondo blanco para el modal.
+        padding: 20, // Espaciado interno.
+        margin: 20, // Margen alrededor del modal.
     },
     input: {
-        marginBottom: 10,
+        marginBottom: 10, // Espacio debajo del campo de texto.
     },
     saveButton: {
-        marginTop: 5,
-        backgroundColor: 'blue',
-        width: 150,
-        alignSelf: "flex-end",
+        marginTop: 5, // Espacio en la parte superior del botón de guardar.
+        backgroundColor: 'blue', // Color de fondo azul para el botón.
+        width: 150, // Ancho del botón.
+        alignSelf: "flex-end", // Alineación del botón al final del contenedor.
     },
     closeButton: {
-        marginTop: 10,
-        width: 5,
-        alignSelf: "flex-end",
-        marginBottom: 10,
+        marginTop: 10, // Espacio en la parte superior del botón de cerrar.
+        width: 5, // Ancho del botón de cerrar.
+        alignSelf: "flex-end", // Alineación del botón al final del contenedor.
+        marginBottom: 10, // Espacio debajo del botón de cerrar.
     },
     buttonActualizar: {
-        alignItems: 'center',
-        padding: 10,
-        width: 90,
-        backgroundColor: 'skyblue',
-        borderRadius: 5,
-        marginVertical: 5,
+        alignItems: 'center', // Alineación del contenido al centro.
+        padding: 10, // Espaciado interno del botón.
+        width: 90, // Ancho del botón.
+        backgroundColor: 'skyblue', // Color de fondo del botón.
+        borderRadius: 5, // Bordes redondeados.
+        marginVertical: 5, // Espacio vertical alrededor del botón.
     },
     buttonEliminar: {
-        alignItems: 'center',
-        padding: 10,
-        width: 90,
-        backgroundColor: 'red',
-        borderRadius: 5,
-        marginVertical: 5,
+        alignItems: 'center', // Alineación del contenido al centro.
+        padding: 10, // Espaciado interno del botón.
+        width: 90, // Ancho del botón.
+        backgroundColor: 'red', // Color de fondo del botón.
+        borderRadius: 5, // Bordes redondeados.
+        marginVertical: 5, // Espacio vertical alrededor del botón.
     },
     containerButtons: {
-        justifyContent: 'space-between',
-        flexDirection: 'row',
+        justifyContent: 'space-between', // Espacio entre botones.
+        flexDirection: 'row', // Dirección de los botones en fila.
     },
 });

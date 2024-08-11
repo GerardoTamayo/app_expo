@@ -182,6 +182,7 @@ export default function Productos() {
         }
     };
 
+    // Actualizar un registro existente.
     const actualizarProductos = async () => {
         try {
             const formData = new FormData();
@@ -211,6 +212,7 @@ export default function Productos() {
         }
     };
 
+    // Función para abrir el modal de actualización con datos del producto.
     const openUpdate = async (id) => {
         const formData = new FormData();
         formData.append('id_producto', id);

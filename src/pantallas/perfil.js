@@ -167,6 +167,7 @@ const ProfileScreen = () => {
     );
 };
 
+// Definimos los estilos para el componente.
 const styles = StyleSheet.create({
     container: {
         flex: 1,
