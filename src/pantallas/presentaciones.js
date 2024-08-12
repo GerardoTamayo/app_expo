@@ -37,7 +37,7 @@ export default function Presentaciones() {
 
     const fillList = async () => { // Función para llenar la lista de categorías obteniendo los datos del servidor.
         try {
-            const response = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readAll', {
+            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readAll`, {
                 method: 'GET'
             });
             const data = await response.json(); // Convierte la respuesta en JSON.
@@ -52,7 +52,7 @@ export default function Presentaciones() {
         try {
             const formData = new FormData();
             formData.append('tipo_presentacion', Presentacion); // Agrega el nombre de la categoría al FormData.
-            const data = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=createRow', {
+            const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=createRow`, {
                 method: 'POST',
                 body: formData
             });
@@ -84,7 +84,7 @@ export default function Presentaciones() {
             const formData = new FormData();
             formData.append('id_presentacion', idToUpdate); // Agrega el ID de la categoría al FormData.
             formData.append('tipo_presentacion', Presentacion); // Agrega el nombre actualizado de la categoría.
-            const data = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=updateRow', {
+            const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=updateRow`, {
                 method: 'POST',
                 body: formData
             });
@@ -106,7 +106,7 @@ export default function Presentaciones() {
         const formData = new FormData();
         formData.append('id_presentacion', id); // Agrega el ID de la categoría al FormData.
         try {
-            const response = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readOne', {
+            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readOne`, {
                 method: 'POST',
                 body: formData
             });
@@ -133,7 +133,7 @@ export default function Presentaciones() {
         try {
             const formData = new FormData();
             formData.append('id_presentacion', idA); // Agrega el ID de la categoría al FormData.
-            const data = await fetch('${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=deleteRow', {
+            const data = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=deleteRow`, {
                 method: 'POST',
                 body: formData
             });
