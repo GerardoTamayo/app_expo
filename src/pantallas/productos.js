@@ -456,10 +456,7 @@ const styles = StyleSheet.create({
         margin: 20,
     },
     input: {
-        marginBottom: 7,
-        borderWidth: 1,
-        borderRadius: 5,
-        backgroundColor: '#fff',
+        marginBottom: 10, // Espacio debajo del campo de texto.
     },
     saveButton: {
         marginTop: 5,
