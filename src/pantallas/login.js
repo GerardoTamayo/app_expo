@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     // Estilo para el contenedor principal.
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#EAD8C0',
         alignItems: 'center',
         justifyContent: 'center',
         padding: 20,

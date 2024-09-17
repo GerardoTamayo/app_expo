@@ -4,24 +4,24 @@
     "slug": "PTC",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/imagenes/logo_web.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./src/imagenes/splash2.png",
+      "image": "./src/imagenes/logo_web.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#EAD8C0"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./src/imagenes/logo_web.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/imagenes/logo_web.png"
     }
   }
 }
