@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'; // Importa íconos 
 // Definimos el componente principal de Presentaciones.
 export default function Presentaciones() {
     const ip = Constantes.IP; // Obtiene la IP desde las constantes importadas.
-    const [searchQuery, setSearchQuery] = useState(''); // Estado para manejar la consulta de búsqueda.
+    const [searchQuery, setSearchQuery] = useState(''); // Estado para almacenar el texto de búsqueda.
     const [visible, setVisible] = useState(false); // Estado para manejar la visibilidad del modal.
     const [idToUpdate, setIdToUpdate] = useState(null); // Estado para manejar el ID de la categoría a actualizar.
     const [idToDelete, setIdToDelete] = useState(null); // Estado para manejar el ID de la categoría a eliminar.
@@ -19,10 +19,13 @@ export default function Presentaciones() {
     const [Presentacion, setPresentacion] = useState('');  // Estado para manejar el nombre de la categoría.
     const showModal = () => setVisible(true); // Función para mostrar el modal.
     const hideModal = () => { // Función para ocultar el modal y limpiar los campos.
+        //Constantes para la busqueda con el elemento de la libreria searchBar
         setIdToUpdate(null);
         setVisible(false);
         limpiarCampos();
     };
+
+    const onChangeSearch = (query) => setSearchQuery(query);
 
     const limpiarCampos = () => { // Función para limpiar los campos del formulario.
         setPresentacion('');
@@ -35,18 +38,41 @@ export default function Presentaciones() {
 
     const hideDeleteDialog = () => setDeleteDialogVisible(false); // Oculta el cuadro de diálogo de eliminación.
 
-    const fillList = async () => { // Función para llenar la lista de categorías obteniendo los datos del servidor.
+    const fillList = async (searchForm = null) => {
         try {
-            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=readAll`, {
-                method: 'GET'
-            });
-            const data = await response.json(); // Convierte la respuesta en JSON.
-            setResponse(data.dataset); // Guarda los datos obtenidos en el estado response.
+            const action = searchForm ? "searchRows" : "readAll";
+            if (action != "readAll") {
+                const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=${action}`, {
+                    method: 'POST',
+                    body: searchForm
+                });
+                const data = await response.json();
+                setResponse(data.dataset);
+                console.log(data.dataset);
+            } else {
+                const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/presentacion.php?action=${action}`, {
+                    method: 'GET'
+                });
+                const data = await response.json();
+                setResponse(data.dataset);
+                console.log(data.dataset);
+            }
         } catch (error) {
-            console.error(error); // Muestra el error en la consola.
-            Alert.alert('Error'); // Muestra una alerta de error.
+            console.error(error);
+            console.log('Error', 'No se pudo obtener la lista de marcas');
         }
     };
+
+    useEffect(() => {
+        if (searchQuery != "") {
+            const formData = new FormData();
+            formData.append("search", searchQuery);
+            fillList(formData);
+        } else {
+            fillList();
+        }
+    }, [searchQuery]);
+
 
     const insertarPresentaciones = async () => { // Función para insertar una nueva categoría en la base de datos.
         try {
@@ -193,6 +219,7 @@ export default function Presentaciones() {
                 <Searchbar
                     placeholder="Buscar presentacion" // Texto de marcador para la barra de búsqueda.
                     value={searchQuery} // Valor actual de la búsqueda.
+                    onChangeText={onChangeSearch} // Agrega función para manejar cambios en el texto de búsqueda
                     style={styles.searchbar} // Aplicación de estilos a la barra de búsqueda.
                 />
                 {/* Botón para mostrar el modal de agregar o actualizar categoría */}

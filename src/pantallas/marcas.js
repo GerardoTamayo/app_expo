@@ -20,6 +20,8 @@ export default function Marcas() {
     const [Marca, setMarca] = useState(''); // Estado para almacenar el nombre de la marca.
     const [Imagen, setImagen] = useState(''); // Estado para almacenar la URI de la imagen de la marca.
 
+    //Constantes para la busqueda con el elemento de la libreria searchBar
+    const onChangeSearch = (query) => setSearchQuery(query);
     // Mostrar el modal de agregar/actualizar marca
     const showModal = () => setVisible(true);
     // Ocultar el modal y limpiar los campos
@@ -45,19 +47,40 @@ export default function Marcas() {
     const hideDeleteDialog = () => setDeleteDialogVisible(false);
 
     // Obtener la lista de marcas de la API
-    const fillList = async () => {
+    const fillList = async (searchForm = null) => {
         try {
-            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/marca.php?action=readAll`, {
-                method: 'GET'
-            });
-            const data = await response.json();
-            setResponse(data.dataset);
-            console.log(data.dataset);
+            const action = searchForm ? "searchRows" : "readAll";
+            if (action != "readAll") {
+                const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/marca.php?action=${action}`, {
+                    method: 'POST',
+                    body: searchForm
+                });
+                const data = await response.json();
+                setResponse(data.dataset);
+                console.log(data.dataset);
+            } else {
+                const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/marca.php?action=${action}`, {
+                    method: 'GET'
+                });
+                const data = await response.json();
+                setResponse(data.dataset);
+                console.log(data.dataset);
+            }
         } catch (error) {
             console.error(error);
-            Alert.alert('Error', 'No se pudo obtener la lista de marcas');
+            console.log('Error', 'No se pudo obtener la lista de marcas');
         }
     };
+
+    useEffect(() => {
+        if (searchQuery != "") {
+            const formData = new FormData();
+            formData.append("search", searchQuery);
+            fillList(formData);
+        } else {
+            fillList();
+        }
+    }, [searchQuery]);
 
     // Insertar una nueva marca en la API
     const insertarMarcas = async () => {
@@ -239,7 +262,7 @@ export default function Marcas() {
                 <Searchbar
                     placeholder="Buscar marca"
                     value={searchQuery}
-                    onChangeText={setSearchQuery} // Agrega función para manejar cambios en el texto de búsqueda
+                    onChangeText={onChangeSearch} // Agrega función para manejar cambios en el texto de búsqueda
                     style={styles.searchbar}
                 />
                 {/* Botón para abrir el modal de agregar/actualizar marca */}

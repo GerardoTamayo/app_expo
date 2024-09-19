@@ -1,14 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import * as Constantes from '../utilidades/constante';
 
 export default function Codigo({ navigation }) {
+    const ip = Constantes.IP;
     const [email, setEmail] = useState('');
-    const [code, setCode] = useState('');
+    const [fecha, setFecha] = useState('');
+    const [nivel, setNivel] = useState('');
 
-    const handleConfirmCode = () => {
-        // Aquí puedes agregar la lógica para verificar el código
-        // Por ahora, simplemente navegamos a la pantalla de nueva contraseña
-        navigation.navigate('NewPassword');
+    // Función para validar la sesión del usuario
+    const enviarCorreo = async () => {
+        try {
+            const fechaActual = new Date();
+            const formData = new FormData();
+            formData.append('fecha', fechaActual.toISOString());
+            formData.append('nivel', 1);
+            formData.append('correo', email);
+
+            // Realiza una solicitud GET para verificar la sesión del usuario
+            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/recuperacion.php?action=envioCorreo`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.status) {
+                Alert.alert('mensaje', 'Correo enviado');
+                navigation.navigate('Sesion');
+            } else {
+                Alert.alert('Error', data.error);
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Ocurrió un error al enviar el correo');
+        }
     };
 
     // regresara los datos que quiere corregir
@@ -22,15 +48,7 @@ export default function Codigo({ navigation }) {
                 placeholder="usuario@gmail.com"
                 keyboardType="email-address"
             />
-            <Text style={styles.label}>Ingrese código de verificación</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={setCode}
-                value={code}
-                placeholder="******"
-                secureTextEntry
-            />
-            <TouchableOpacity style={styles.button} onPress={handleConfirmCode}>
+            <TouchableOpacity style={styles.button} onPress={enviarCorreo}> 
                 <Text style={styles.buttonText}>Confirmar código</Text>
             </TouchableOpacity>
         </View>
@@ -41,7 +59,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#fff',
+        backgroundColor: '#EAD8C0',
         justifyContent: 'center',
     },
     label: {
@@ -49,11 +67,15 @@ const styles = StyleSheet.create({
         marginVertical: 8,
     },
     input: {
-        height: 40,
-        borderColor: '#ccc',
+        width: '100%',
+        height: 50,
+        borderColor: '#000',
         borderWidth: 1,
-        marginBottom: 12,
-        paddingHorizontal: 8,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginBottom: 20,
+        fontSize: 18,
+        backgroundColor: '#fff',
     },
     button: {
         backgroundColor: '#9368EE',

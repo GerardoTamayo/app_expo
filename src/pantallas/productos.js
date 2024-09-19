@@ -14,7 +14,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 export default function Productos() {
     const ip = Constantes.IP;
     // Definimos los estados necesarios.
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState(''); // Estado para almacenar el texto de búsqueda.
     const [date, setDate] = useState(new Date());
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
     const [mode, setMode] = useState('date');
@@ -25,6 +25,8 @@ export default function Productos() {
     const [visible, setVisible] = useState(false);
     const [idToUpdate, setIdToUpdate] = useState(null);
     const [idToDelete, setIdToDelete] = useState(null);
+
+    const onChangeSearch = (query) => setSearchQuery(query);
 
     // Función para mostrar el modal.
     const showModal = () => setVisible(true);
@@ -64,19 +66,40 @@ export default function Productos() {
     const hideDeleteDialog = () => setDeleteDialogVisible(false);
 
     // Función para obtener datos de la API
-    const fillList = async () => {
+    const fillList = async (searchForm = null) => {
         try {
-            // Realiza una solicitud GET para verificar la sesión del usuario
-            const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/producto.php?action=readAll`, {
-                method: 'GET'
-            });
-            const data = await response.json();
-            setResponse(data.dataset);
+            const action = searchForm ? "searchRows" : "readAll";
+            if (action != "readAll") {
+                const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/producto.php?action=${action}`, {
+                    method: 'POST',
+                    body: searchForm
+                });
+                const data = await response.json();
+                setResponse(data.dataset);
+                console.log(data.dataset);
+            } else {
+                const response = await fetch(`${ip}/Expo2024/expo/api/servicios/administrador/producto.php?action=${action}`, {
+                    method: 'GET'
+                });
+                const data = await response.json();
+                setResponse(data.dataset);
+                console.log(data.dataset);
+            }
         } catch (error) {
             console.error(error);
-            Alert.alert('Error');
+            console.log('Error', 'No se pudo obtener la lista de marcas');
         }
     };
+
+    useEffect(() => {
+        if (searchQuery != "") {
+            const formData = new FormData();
+            formData.append("search", searchQuery);
+            fillList(formData);
+        } else {
+            fillList();
+        }
+    }, [searchQuery]);
 
     const getCategorias = async () => {
         try {
@@ -328,6 +351,7 @@ export default function Productos() {
                     placeholder="Buscar producto"
                     // onChangeText={onChangeSearch}
                     value={searchQuery}
+                    onChangeText={onChangeSearch} // Agrega función para manejar cambios en el texto de búsqueda
                     style={styles.searchbar}
                 />
                 {/* Botón para añadir nuevo producto */}
