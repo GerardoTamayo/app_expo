@@ -18,10 +18,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/imagenes/logo_web.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.gtr589.PTC"
     },
     "web": {
       "favicon": "./src/imagenes/logo_web.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "461a6038-d4f3-4cd9-85e3-32a0e586ee5f"
+      }
     }
   }
 }
